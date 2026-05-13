@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI API Gateway</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0a0a0a;
+      color: #e5e5e5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .container {
+      max-width: 900px;
+      width: 100%;
+      padding: 2rem;
+    }
+    header {
+      text-align: center;
+      padding: 3rem 0 2rem;
+    }
+    h1 {
+      font-size: 2.5rem;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.5rem;
+    }
+    .subtitle {
+      color: #888;
+      font-size: 1.1rem;
+    }
+    .status {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      margin: 2rem 0;
+      flex-wrap: wrap;
+    }
+    .status-badge {
+      padding: 0.5rem 1rem;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+    .status-ok { background: #064e3b; color: #6ee7b7; }
+    .status-err { background: #7f1d1d; color: #fca5a5; }
+    .card {
+      background: #141414;
+      border: 1px solid #262626;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .card h2 {
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+      color: #c4b5fd;
+    }
+    pre {
+      background: #1a1a2e;
+      border: 1px solid #333;
+      border-radius: 8px;
+      padding: 1rem;
+      overflow-x: auto;
+      font-size: 0.85rem;
+      line-height: 1.6;
+      color: #d4d4d4;
+    }
+    code { font-family: 'Fira Code', 'Cascadia Code', monospace; }
+    .endpoint {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid #262626;
+    }
+    .endpoint:last-child { border-bottom: none; }
+    .method {
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      min-width: 50px;
+      text-align: center;
+    }
+    .method-post { background: #1e3a5f; color: #93c5fd; }
+    .method-get { background: #064e3b; color: #6ee7b7; }
+    .endpoint-path { color: #e5e5e5; font-family: monospace; }
+    .endpoint-desc { color: #888; font-size: 0.85rem; margin-left: auto; }
+    .models-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    .model-group h3 {
+      font-size: 0.95rem;
+      color: #a78bfa;
+      margin-bottom: 0.75rem;
+    }
+    .model-tag {
+      display: inline-block;
+      padding: 0.25rem 0.6rem;
+      margin: 0.2rem;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-family: monospace;
+      background: #1e1e2e;
+      border: 1px solid #333;
+      color: #d4d4d4;
+    }
+    footer {
+      text-align: center;
+      padding: 2rem;
+      color: #555;
+      font-size: 0.85rem;
+    }
+    @media (max-width: 600px) {
+      h1 { font-size: 1.8rem; }
+      .models-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>⚡ AI API Gateway</h1>
+      <p class="subtitle">Unified API proxy for OpenAI &amp; Anthropic models</p>
+      <div class="status" id="status"></div>
+    </header>
+
+    <div class="card">
+      <h2>📡 Endpoints</h2>
+      <div class="endpoint">
+        <span class="method method-post">POST</span>
+        <span class="endpoint-path">/api/chat</span>
+        <span class="endpoint-desc">Send chat completions</span>
+      </div>
+      <div class="endpoint">
+        <span class="method method-get">GET</span>
+        <span class="endpoint-path">/api/models</span>
+        <span class="endpoint-desc">List available models</span>
+      </div>
+      <div class="endpoint">
+        <span class="method method-get">GET</span>
+        <span class="endpoint-path">/api/health</span>
+        <span class="endpoint-desc">Health check</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>🚀 Quick Start</h2>
+      <pre><code>curl -X POST https://YOUR_DOMAIN/api/chat \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -d '{
+    "model": "gpt-4o",
+    "messages": [
+      {"role": "system", "content": "You are a helpful coding assistant."},
+      {"role": "user", "content": "Write a Python function to sort a list"}
+    ],
+    "stream": false
+  }'</code></pre>
+    </div>
+
+    <div class="card">
+      <h2>🤖 Supported Models</h2>
+      <div class="models-grid" id="models-grid">
+        <div class="model-group">
+          <h3>OpenAI</h3>
+          <div id="openai-models">Loading...</div>
+        </div>
+        <div class="model-group">
+          <h3>Anthropic</h3>
+          <div id="anthropic-models">Loading...</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>🔧 Setup</h2>
+      <pre><code>1. Deploy this project to Vercel
+2. Go to Vercel Dashboard → Settings → Environment Variables
+3. Add your API keys:
+   - OPENAI_API_KEY=sk-...
+   - ANTHROPIC_API_KEY=sk-ant-...
+4. Redeploy the project
+5. Use your Vercel URL as the API endpoint</code></pre>
+    </div>
+
+    <div class="card">
+      <h2>💡 Usage Examples</h2>
+      <h3 style="color:#a78bfa;font-size:0.95rem;margin-bottom:0.75rem;">Python</h3>
+      <pre><code>import requests
+
+response = requests.post(
+    "https://YOUR_DOMAIN/api/chat",
+    headers={
+        "Content-Type": "application/json",
+        "Authorization": "Bearer YOUR_API_KEY"
+    },
+    json={
+        "model": "claude-sonnet-4-20250514",
+        "messages": [
+            {"role": "user", "content": "Explain async/await in JavaScript"}
+        ]
+    }
+)
+print(response.json())</code></pre>
+
+      <h3 style="color:#a78bfa;font-size:0.95rem;margin:1rem 0 0.75rem;">JavaScript (fetch)</h3>
+      <pre><code>const response = await fetch("https://YOUR_DOMAIN/api/chat", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    "Authorization": "Bearer YOUR_API_KEY"
+  },
+  body: JSON.stringify({
+    model: "gpt-4o",
+    messages: [
+      { role: "user", content: "Write a React component for a todo list" }
+    ],
+    stream: true
+  })
+});
+
+const reader = response.body.getReader();
+const decoder = new TextDecoder();
+while (true) {
+  const { done, value } = await reader.read();
+  if (done) break;
+  console.log(decoder.decode(value));
+}</code></pre>
+    </div>
+  </div>
+
+  <footer>
+    AI API Gateway v1.0.0 &mdash; Unified proxy for OpenAI &amp; Anthropic
+  </footer>
+
+  <script>
+    async function loadStatus() {
+      try {
+        const res = await fetch("/api/health");
+        const data = await res.json();
+        const el = document.getElementById("status");
+        const providers = data.providers || {};
+        el.innerHTML = Object.entries(providers)
+          .map(([name, info]) =>
+            `<span class="status-badge ${info.configured ? "status-ok" : "status-err"}">
+              ${name}: ${info.configured ? "✓ Configured" : "✗ Not configured"}
+            </span>`
+          )
+          .join("");
+      } catch {
+        document.getElementById("status").innerHTML =
+          '<span class="status-badge status-err">API unavailable</span>';
+      }
+    }
+
+    async function loadModels() {
+      try {
+        const res = await fetch("/api/models");
+        const data = await res.json();
+        const models = data.models || {};
+        for (const [provider, list] of Object.entries(models)) {
+          const el = document.getElementById(`${provider}-models`);
+          if (el) {
+            el.innerHTML = list
+              .map((m) => `<span class="model-tag" title="${m.description}">${m.id}</span>`)
+              .join("");
+          }
+        }
+      } catch {
+        document.getElementById("openai-models").textContent = "Failed to load";
+        document.getElementById("anthropic-models").textContent = "Failed to load";
+      }
+    }
+
+    loadStatus();
+    loadModels();
+  </script>
+</body>
+</html>
