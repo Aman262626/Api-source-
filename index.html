@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Telegram AI Bot</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0a0a0a;
+      color: #e5e5e5;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .container {
+      max-width: 600px;
+      width: 100%;
+      padding: 2rem;
+      text-align: center;
+    }
+    h1 {
+      font-size: 2.5rem;
+      background: linear-gradient(135deg, #0088cc, #00c6ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 1rem;
+    }
+    .subtitle {
+      color: #888;
+      font-size: 1.1rem;
+      margin-bottom: 2rem;
+    }
+    .card {
+      background: #141414;
+      border: 1px solid #262626;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      text-align: left;
+    }
+    .card h2 {
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+      color: #00c6ff;
+    }
+    .command {
+      padding: 0.5rem 0;
+      border-bottom: 1px solid #262626;
+      font-family: monospace;
+      font-size: 0.9rem;
+    }
+    .command:last-child { border-bottom: none; }
+    .command span { color: #888; font-family: sans-serif; }
+    .steps {
+      list-style: none;
+      counter-reset: step;
+    }
+    .steps li {
+      counter-increment: step;
+      padding: 0.5rem 0;
+      padding-left: 2rem;
+      position: relative;
+    }
+    .steps li::before {
+      content: counter(step);
+      position: absolute;
+      left: 0;
+      width: 1.5rem;
+      height: 1.5rem;
+      border-radius: 50%;
+      background: #1e3a5f;
+      color: #93c5fd;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+    code {
+      background: #1e1e2e;
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      font-size: 0.85rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🤖 Telegram AI Bot</h1>
+    <p class="subtitle">AI-powered Telegram bot deployed on Vercel</p>
+
+    <div class="card">
+      <h2>Bot Commands</h2>
+      <div class="command">/start <span>- Welcome message</span></div>
+      <div class="command">/ask &lt;question&gt; <span>- Get AI response</span></div>
+      <div class="command">/help <span>- Get support</span></div>
+      <div class="command">/admin <span>- Contact admin</span></div>
+      <div class="command">/live <span>- View members count</span></div>
+    </div>
+
+    <div class="card">
+      <h2>Setup Steps</h2>
+      <ol class="steps">
+        <li>Create a bot via <a href="https://t.me/BotFather" style="color:#00c6ff;">@BotFather</a> on Telegram</li>
+        <li>Deploy this repo to Vercel</li>
+        <li>Add <code>BOT_TOKEN</code> in Vercel Environment Variables</li>
+        <li>Visit <code>/api/setwebhook</code> once to activate the bot</li>
+      </ol>
+    </div>
+  </div>
+</body>
+</html>
