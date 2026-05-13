@@ -1,160 +1,62 @@
-# AI API Gateway
+# Telegram AI Bot (Vercel)
 
-Unified API proxy for **Google Gemini** (FREE), **OpenAI**, and **Anthropic** models. Deploy on Vercel and use it as a single API endpoint.
-
-## Google Gemini - FREE API Key
-
-Google Gemini models are **completely free** to use. Get your free API key in 30 seconds:
-
-1. Go to [Google AI Studio](https://aistudio.google.com/apikey)
-2. Sign in with your Google account
-3. Click "Create API Key"
-4. Copy the key - done!
-
-**Available FREE models:** `gemini-2.5-pro` · `gemini-2.5-flash` · `gemini-2.0-flash` · `gemini-2.0-flash-lite` · `gemini-1.5-pro` · `gemini-1.5-flash` · `gemini-1.5-flash-8b`
+AI-powered Telegram bot deployed on Vercel using webhooks.
 
 ## Features
 
-- **Unified Endpoint**: Single `/api/chat` endpoint for all models
-- **Auto Provider Detection**: Automatically routes to the correct provider based on model name
-- **Streaming Support**: Full streaming support for real-time responses
-- **OpenAI-Compatible Response Format**: Gemini responses are converted to OpenAI format
-- **CORS Enabled**: Use from any frontend application
-- **Zero Dependencies**: Uses only Node.js built-in modules
-- **Vercel Ready**: Deploys instantly on Vercel
+- `/ask <question>` - Get AI-generated responses
+- `/start` - Welcome message
+- `/help` - Get support
+- `/admin` - Contact admin
+- `/live` - View members count
 
-## Quick Setup
+## Setup
 
-### 1. Deploy to Vercel
+### 1. Create a Telegram Bot
+
+1. Open Telegram and search for [@BotFather](https://t.me/BotFather)
+2. Send `/newbot` and follow instructions
+3. Copy the bot token
+
+### 2. Deploy to Vercel
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/Aman262626/Api-source-)
 
-Or manually:
-
-```bash
-npm i -g vercel
-vercel
-```
-
-### 2. Set Environment Variables
+### 3. Set Environment Variable
 
 In Vercel Dashboard → Your Project → Settings → Environment Variables:
 
-| Variable | Description | Free? |
-|----------|-------------|-------|
-| `GEMINI_API_KEY` | Google Gemini API key | Yes - [Get free key](https://aistudio.google.com/apikey) |
-| `OPENAI_API_KEY` | OpenAI API key (optional) | No |
-| `ANTHROPIC_API_KEY` | Anthropic API key (optional) | No |
+| Variable | Description |
+|----------|-------------|
+| `BOT_TOKEN` | Your Telegram bot token from BotFather |
 
-### 3. Redeploy
+### 4. Activate Webhook
 
-After adding environment variables, redeploy the project for changes to take effect.
+After deploying, visit this URL **once** in your browser:
 
-## API Reference
-
-### POST `/api/chat`
-
-Send a chat completion request.
-
-**Body:**
-```json
-{
-  "model": "gemini-2.0-flash",
-  "messages": [
-    { "role": "system", "content": "You are a helpful coding assistant." },
-    { "role": "user", "content": "Write a Python function to sort a list" }
-  ],
-  "stream": false,
-  "temperature": 0.7
-}
+```
+https://YOUR_VERCEL_URL/api/setwebhook
 ```
 
-**Optional Fields:**
-- `provider`: Force a specific provider (`"google"`, `"openai"`, or `"anthropic"`)
-- `stream`: Enable streaming responses (`true`/`false`)
-- `temperature`: Control randomness (0-2)
-- `max_tokens`: Maximum tokens in the response
+This registers your Vercel URL with Telegram so the bot receives messages.
 
-### GET `/api/models`
+### 5. Done!
 
-List all supported models.
+Your bot is now live. Send `/start` to your bot on Telegram.
 
-```bash
-curl https://YOUR_DOMAIN/api/models
-# Filter by provider
-curl https://YOUR_DOMAIN/api/models?provider=google
-```
+## API Endpoints
 
-### GET `/api/health`
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/webhook` | POST | Receives Telegram updates (webhook) |
+| `/api/setwebhook` | GET | Registers webhook with Telegram |
 
-Check API status and provider configuration.
+## How It Works
 
-## Usage Examples
-
-### cURL (Gemini - FREE)
-
-```bash
-curl -X POST https://YOUR_DOMAIN/api/chat \
-  -H "Content-Type: application/json" \
-  -d '{
-    "model": "gemini-2.0-flash",
-    "messages": [{"role": "user", "content": "Write hello world in Python"}]
-  }'
-```
-
-### Python
-
-```python
-import requests
-
-response = requests.post(
-    "https://YOUR_DOMAIN/api/chat",
-    json={
-        "model": "gemini-2.5-pro",
-        "messages": [
-            {"role": "system", "content": "You are an expert coder."},
-            {"role": "user", "content": "Build a REST API with FastAPI"}
-        ]
-    }
-)
-data = response.json()
-print(data["choices"][0]["message"]["content"])
-```
-
-### JavaScript
-
-```javascript
-const response = await fetch("https://YOUR_DOMAIN/api/chat", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({
-    model: "gemini-2.0-flash",
-    messages: [{ role: "user", content: "Write a React todo app" }]
-  })
-});
-const data = await response.json();
-console.log(data.choices[0].message.content);
-```
-
-## Supported Models
-
-### Google Gemini (FREE)
-`gemini-2.5-pro` · `gemini-2.5-flash` · `gemini-2.0-flash` · `gemini-2.0-flash-lite` · `gemini-1.5-pro` · `gemini-1.5-flash` · `gemini-1.5-flash-8b`
-
-### OpenAI (Requires paid API key)
-`gpt-4o` · `gpt-4o-mini` · `gpt-4-turbo` · `gpt-4` · `gpt-3.5-turbo` · `o1` · `o1-mini` · `o3-mini`
-
-### Anthropic (Requires paid API key)
-`claude-opus-4-20250514` · `claude-sonnet-4-20250514` · `claude-3-7-sonnet-20250219` · `claude-3-5-sonnet-20241022` · `claude-3-5-haiku-20241022` · `claude-3-opus-20240229` · `claude-3-sonnet-20240229` · `claude-3-haiku-20240307`
-
-## Authentication
-
-API keys can be provided in two ways:
-
-1. **Environment Variables** (recommended): Set `GEMINI_API_KEY` (and optionally `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`) in Vercel
-2. **Authorization Header**: Pass the key per-request via `Authorization: Bearer <key>`
-
-If both are set, the Authorization header takes priority.
+- Telegram sends messages to `/api/webhook` via webhook
+- The serverless function processes the message and sends a response
+- AI responses come from the Gemini API
+- No server needed — runs entirely on Vercel serverless functions
 
 ## License
 
