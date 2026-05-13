@@ -1,4 +1,13 @@
 const MODELS = {
+  google: [
+    { id: "gemini-2.5-pro", name: "Gemini 2.5 Pro", description: "Most capable Gemini model (FREE)" },
+    { id: "gemini-2.5-flash", name: "Gemini 2.5 Flash", description: "Fast and smart (FREE)" },
+    { id: "gemini-2.0-flash", name: "Gemini 2.0 Flash", description: "Fast multimodal model (FREE)" },
+    { id: "gemini-2.0-flash-lite", name: "Gemini 2.0 Flash Lite", description: "Lightweight and fast (FREE)" },
+    { id: "gemini-1.5-pro", name: "Gemini 1.5 Pro", description: "Long context model (FREE)" },
+    { id: "gemini-1.5-flash", name: "Gemini 1.5 Flash", description: "Balanced speed and quality (FREE)" },
+    { id: "gemini-1.5-flash-8b", name: "Gemini 1.5 Flash 8B", description: "Smallest and fastest (FREE)" },
+  ],
   openai: [
     { id: "gpt-4o", name: "GPT-4o", description: "Most capable OpenAI model" },
     { id: "gpt-4o-mini", name: "GPT-4o Mini", description: "Fast and affordable" },
